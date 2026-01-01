@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'leaflet',
+
     'map',
 ]
 
@@ -126,6 +128,15 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LEAFLET_CONFIG = {
+    'DEFAULT_CENTER': (1.3733, 32.2903),  # Uganda Coordinates
+    'DEFAULT_ZOOM': 7,
+    'MAX_ZOOM': 18,
+    'MIN_ZOOM': 5,
+    'SCALE': 'both',
+    'ATTRIBUTION_PREFIX': 'Uganda Coffee Map Project'
+}
 
 GDAL_LIBRARY_PATH = '/opt/homebrew/opt/gdal/lib/libgdal.dylib'
 GEOS_LIBRARY_PATH = '/opt/homebrew/opt/geos/lib/libgeos_c.dylib'
