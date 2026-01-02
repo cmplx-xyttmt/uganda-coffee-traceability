@@ -63,6 +63,38 @@ function App() {
                     </div>
                 )}
 
+                {traceResult && (
+                    <div
+                        className="m-4 p-5 bg-white border border-slate-200 rounded-2xl shadow-sm animate-in fade-in slide-in-from-bottom-4">
+                        <div className="flex items-center gap-2 mb-3">
+                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Regional Context</span>
+                        </div>
+
+                        <h2 className="text-2xl font-black text-slate-800 tracking-tight">
+                            {traceResult.region || "Unknown District"}
+                        </h2>
+
+                        <div className="mt-4 grid grid-cols-2 gap-3">
+                            <div className="p-3 bg-slate-50 rounded-lg">
+                                <p className="text-[10px] text-slate-400 uppercase font-bold">Status</p>
+                                <p className={`text-xs font-bold ${traceResult.isEudrSafe ? 'text-emerald-600' : 'text-amber-600'}`}>
+                                    {traceResult.status}
+                                </p>
+                            </div>
+                            <div className="p-3 bg-slate-50 rounded-lg">
+                                <p className="text-[10px] text-slate-400 uppercase font-bold">Country</p>
+                                <p className="text-xs font-bold text-slate-700">Uganda</p>
+                            </div>
+                        </div>
+
+                        <p className="mt-4 text-[11px] leading-relaxed text-slate-500 italic border-l-2 border-slate-100 pl-3">
+                            "This location falls within the {traceResult.region} administrative zone. 2020 baseline
+                            analysis indicates established coffee production prior to EUDR cutoff."
+                        </p>
+                    </div>
+                )}
+
                 {/* SUMMARY STATS CARD */}
                 <div className="p-4 bg-slate-900 m-4 rounded-xl text-white">
                     <h3 className="text-slate-400 text-xs uppercase tracking-wider font-semibold">National Overview</h3>
@@ -72,7 +104,7 @@ function App() {
                             <p className="text-slate-400 text-xs">Total Detected Plots</p>
                         </div>
                         <div>
-                        <p className="text-xl font-bold">
+                            <p className="text-xl font-bold">
                                 {loading ? "..." : (data?.summaryStats.totalAreaSqMeters / 1000000).toFixed(2)}
                             </p>
                             <p className="text-slate-400 text-xs">Total Area (sq km)</p>

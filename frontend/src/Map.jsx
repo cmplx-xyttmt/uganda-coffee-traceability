@@ -1,7 +1,7 @@
-import {MapContainer, TileLayer, useMapEvents, Marker, Popup} from "react-leaflet";
+import {MapContainer, TileLayer, useMapEvents, Marker, Popup, GeoJSON} from "react-leaflet";
 import 'leaflet/dist/leaflet.css';
 import {gql} from "@apollo/client";
-import {useLazyQuery} from "@apollo/client/react";
+import {useLazyQuery, useQuery} from "@apollo/client/react";
 import {useEffect, useState} from "react";
 
 
@@ -15,6 +15,15 @@ const CHECK_TRACEABILITY = gql`
         }
     }
 `;
+
+const GET_DISTRICT_BOUNDARIES = gql`
+    query {
+        allDistricts {
+            name
+            mpoly
+        }
+    }
+`
 
 function MapEventsHandler({onResult}) {
     const [clickedPos, setClickedPos] = useState(null);
@@ -60,6 +69,7 @@ function MapEventsHandler({onResult}) {
 }
 
 function Map({onTraceResult}) {
+    const {loading, error, data: districtData} = useQuery(GET_DISTRICT_BOUNDARIES);
     const center = [1.3733, 32.2903]; // Center of Uganda
 
     return (
@@ -72,6 +82,16 @@ function Map({onTraceResult}) {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
+
+            {districtData && (<GeoJSON
+                data={districtData.allDistricts.map(d => JSON.parse(d.mpoly))}
+                style={{
+                    color: '#94a3b8',
+                    weight: 1,
+                    fillOpacity: 0.1,
+                    fillColor: '#64748b'
+                }}
+            />)}
             <MapEventsHandler onResult={onTraceResult}/>
         </MapContainer>
     );
