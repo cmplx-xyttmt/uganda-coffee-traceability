@@ -16,3 +16,13 @@ class CoffeeZone(models.Model):
 
     def __str__(self):
         return f"Plot {self.gee_id} ({self.region_name or 'Unknown Region'})"
+
+
+class District(models.Model):
+    name = models.CharField(max_length=100)
+    pcode = models.CharField(max_length=10, blank=True)
+    region = models.CharField(max_length=50, blank=True)  # adm1_name (e.g., Nothern)
+    mpoly = models.MultiPolygonField(srid=4326)
+
+    def __str__(self):
+        return self.name
