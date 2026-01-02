@@ -4,7 +4,7 @@ from graphene_django import DjangoObjectType
 from django.contrib.gis.geos import Point
 from django.contrib.gis.db.models.functions import Area, Transform
 from django.db.models import Sum
-from .models import CoffeeZone
+from .models import CoffeeZone, District
 
 
 class TraceabilityResult(graphene.ObjectType):
@@ -25,6 +25,20 @@ class CoffeeZoneType(DjangoObjectType):
         fields = ("id", "gee_id", "zone_type", "region_name")
 
 
+class DistrictType(DjangoObjectType):
+    mpoly = graphene.String()  # define as string so we can send as raw GeoJSON
+
+    class Meta:
+        model = District
+        fields = ("id", "name", "pcode", "region")
+
+    def resolve_mpoly(self, info):
+        if self.mpoly:
+            simplified = self.mpoly.simplify(0.005, preserve_topology=True)
+            return simplified.json
+        return None
+
+
 class Query(graphene.ObjectType):
     # Query to get ALL zones
     all_zones = graphene.List(CoffeeZoneType)
@@ -37,6 +51,8 @@ class Query(graphene.ObjectType):
     )
 
     summary_stats = graphene.Field(SummaryStats)
+
+    all_districts = graphene.List(DistrictType)
 
     def resolve_all_zones(root, info):
         return CoffeeZone.objects.all()
@@ -75,6 +91,11 @@ class Query(graphene.ObjectType):
             "total_plots": count,
             "total_area_sq_meters": total_area.sq_m if total_area else 0
         }
+
+    def resolve_all_districts(self, info):
+        return District.objects.annotate(
+
+        )
 
 
 schema = graphene.Schema(query=Query)
