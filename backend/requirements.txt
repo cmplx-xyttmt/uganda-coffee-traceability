@@ -8,3 +8,4 @@ django-filter
 django-stubs
 
 graphene~=3.4.3
+django-cors-headers
