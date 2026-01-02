@@ -1,7 +1,9 @@
 import './App.css';
+import {useState} from "react";
 import {useQuery} from "@apollo/client/react";
 import {gql} from "@apollo/client";
 import {LayoutDashboard, Map as MapIcon, ShieldCheck} from "lucide-react";
+import Map from "./Map.jsx";
 
 const GET_STATS = gql`
     query GetStats {
@@ -15,6 +17,11 @@ const GET_STATS = gql`
 function App() {
 
     const {loading, error, data} = useQuery(GET_STATS);
+    const [traceResult, setTraceResult] = useState(null);
+
+    const handleTraceResult = (result) => {
+        setTraceResult((result));
+    };
 
     return (
         <div className="flex h-screen w-full bg-slate-50 font-sans">
@@ -40,6 +47,22 @@ function App() {
                     </div>
                 </nav>
 
+                {/* TRACEABILITY RESULT CARD */}
+                {traceResult && (
+                    <div className={`m-4 p-4 rounded-xl border ${
+                        traceResult.isEudrSafe
+                            ? "bg-emerald-50 border-emerald-200 text-emerald-900"
+                            : "bg-amber-50 border-amber-200 text-amber-900"
+                    }`}>
+                        <h3 className="text-xs uppercase tracking-wider font-bold opacity-60">Verification Result</h3>
+                        <div className="mt-2">
+                            <p className="text-lg font-bold">{traceResult.status}</p>
+                            <p className="text-sm mt-1">{traceResult.message}</p>
+                            <p className="text-xs mt-2 font-medium">Region: {traceResult.region}</p>
+                        </div>
+                    </div>
+                )}
+
                 {/* SUMMARY STATS CARD */}
                 <div className="p-4 bg-slate-900 m-4 rounded-xl text-white">
                     <h3 className="text-slate-400 text-xs uppercase tracking-wider font-semibold">National Overview</h3>
@@ -49,7 +72,7 @@ function App() {
                             <p className="text-slate-400 text-xs">Total Detected Plots</p>
                         </div>
                         <div>
-                            <p className="text-xl font-bold">
+                        <p className="text-xl font-bold">
                                 {loading ? "..." : (data?.summaryStats.totalAreaSqMeters / 1000000).toFixed(2)}
                             </p>
                             <p className="text-slate-400 text-xs">Total Area (sq km)</p>
@@ -72,7 +95,7 @@ function App() {
 
                 <div className="flex-1 bg-slate-200 relative">
                     <div className="absolute inset-0 flex items-center justify-center text-slate-400">
-                        Map Loading...
+                        <Map onTraceResult={handleTraceResult}/>
                     </div>
                 </div>
             </main>
