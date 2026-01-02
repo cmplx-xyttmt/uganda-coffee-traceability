@@ -12,7 +12,7 @@ class CoffeeZone(models.Model):
 
     # The core geospatial field
     # SRID 4326 is the standard WGS84 (GPS) coordinate system
-    mpoly = models.MultiPolygonField(srid=4236)
+    mpoly = models.MultiPolygonField(srid=4326)
 
     def __str__(self):
         return f"Plot {self.gee_id} ({self.region_name or 'Unknown Region'})"
