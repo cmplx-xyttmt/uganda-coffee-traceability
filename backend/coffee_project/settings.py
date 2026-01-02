@@ -38,6 +38,7 @@ INSTALLED_APPS = [
 
     'django.contrib.gis',
     'leaflet',
+    'graphene_django',
 
     'map',
 ]

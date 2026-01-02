@@ -1,5 +1,10 @@
-django
+django~=5.2.9
 psycopg2-binary
 django-geojson
 dj-database-url
-django-leaflet
+django-leaflet~=0.33.0
+graphene-django
+django-filter
+django-stubs
+
+graphene~=3.4.3
