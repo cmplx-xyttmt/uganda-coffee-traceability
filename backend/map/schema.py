@@ -1,4 +1,6 @@
 #  noqa
+import json
+
 import graphene
 from graphene_django import DjangoObjectType
 from django.contrib.gis.geos import Point
@@ -20,9 +22,14 @@ class SummaryStats(graphene.ObjectType):
 
 
 class CoffeeZoneType(DjangoObjectType):
+    mpoly = graphene.String()
+
     class Meta:
         model = CoffeeZone
         fields = ("id", "gee_id", "zone_type", "region_name")
+
+    def resolve_mpoly(self, info):
+        return self.mpoly.json if self.mpoly else None
 
 
 class DistrictType(DjangoObjectType):
@@ -33,10 +40,20 @@ class DistrictType(DjangoObjectType):
         fields = ("id", "name", "pcode", "region")
 
     def resolve_mpoly(self, info):
-        if self.mpoly:
-            simplified = self.mpoly.simplify(0.005, preserve_topology=True)
-            return simplified.json
-        return None
+        if not self.mpoly:
+            return None
+        simplified_geom = self.mpoly.simplify(0.005, preserve_topology=True)
+        # create a dictionary that follows the GeoJSON Feature spec
+        feature = {
+            "type": "Feature",
+            "properties": {
+                "name": self.name,  # so leaflet can see
+                "id": self.id,
+                "region": self.region
+            },
+            "geometry": json.loads(simplified_geom.json)
+        }
+        return json.dumps(feature)
 
 
 class Query(graphene.ObjectType):
@@ -62,6 +79,9 @@ class Query(graphene.ObjectType):
     def resolve_check_traceability(root, info, lat, lng):
         user_point = Point(lng, lat, srid=4326)
 
+        district = District.objects.filter(mpoly__contains=user_point).first()
+        district_name = district.name if district else "Outside Uganda"
+
         zone = CoffeeZone.objects.filter(mpoly__contains=user_point).first()
 
         if zone:
@@ -73,8 +93,9 @@ class Query(graphene.ObjectType):
             }
 
         return {
-            "status": "WARNING",
-            "message": "Point is outside known 2020 coffee areas.",
+            "status": "NON-DETECT",
+            "message": "No established coffee detected in 2020 baseline.",
+            "region": district_name,
             "is_eudr_safe": False
         }
 

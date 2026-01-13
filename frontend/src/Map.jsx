@@ -87,7 +87,7 @@ function Map({onTraceResult, onDistrictClick, zones}) {
                 data={districtData.allDistricts.map(d => JSON.parse(d.mpoly))}
                 eventHandlers={{
                     click: (e) => {
-                        const name = e.propagatedFrom.feature.properties.adm2_name;
+                        const name = e.propagatedFrom.feature.properties.name;
                         console.log("Selected District:", name);
                         onDistrictClick(name);
                     }
