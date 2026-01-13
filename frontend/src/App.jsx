@@ -142,12 +142,6 @@ function App() {
             <main className="flex-1 relative flex flex-col">
                 <header className="h-16 bg-white border-b border-slate-200 flex items-center px-8 justify-between">
                     <span className="text-slate-600 font-medium">Uganda Satellite Analysis (2020 Baseline)</span>
-                    <div className="flex gap-4">
-                        <button
-                            className="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors">
-                            Verify Coordinates
-                        </button>
-                    </div>
                 </header>
 
                 <div className="flex-1 bg-slate-200 relative">
