@@ -14,10 +14,26 @@ const GET_STATS = gql`
     }
 `;
 
+const GET_DISTRICT_ZONES = gql`
+    query GetDistrictZones($name: String!) {
+        allZones(districtName: $name) {
+            geeId
+            mpoly
+        }
+    }
+`;
+
 function App() {
 
     const {loading, error, data} = useQuery(GET_STATS);
     const [traceResult, setTraceResult] = useState(null);
+
+    const [activeDistrict, setActiveDistrict] = useState(null);
+    // Fetch Zones (only runs when activeDistrict is NOT null
+    const {data: zoneData, loading: zonesLoading} = useQuery(GET_DISTRICT_ZONES, {
+        variables: {name: activeDistrict || ""},
+        skip: !activeDistrict,
+    });
 
     const handleTraceResult = (result) => {
         setTraceResult((result));
@@ -40,12 +56,21 @@ function App() {
                         <LayoutDashboard size={20}/>
                         Dashboard
                     </div>
-                    <div
-                        className="flex items-center gap-3 p-3 text-slate-600 hover:bg-slate-50 rounded-lg cursor-pointer transition-all">
-                        <MapIcon size={20}/>
-                        Map Explorer
-                    </div>
                 </nav>
+
+                {activeDistrict && (
+                    <div className="p-4 border-b bg-emerald-50">
+                        <p className="text-xs font-bold text-emerald-600 uppercase">Viewing District</p>
+                        <h2 className="text-xl font-bold">{activeDistrict}</h2>
+                        <button
+                            onClick={() => setActiveDistrict(null)}
+                            className="text-xs text-slate-500 underline mt-1"
+                        >
+                            Clear filter
+                        </button>
+                        {zonesLoading && <p className="text-xs animate-pulse mt-2">Loading coffee plots...</p>}
+                    </div>
+                )}
 
                 {/* TRACEABILITY RESULT CARD */}
                 {traceResult && (
@@ -126,10 +151,11 @@ function App() {
                 </header>
 
                 <div className="flex-1 bg-slate-200 relative">
-                    <div className="absolute inset-0 flex items-center justify-center text-slate-400">
-                        <Map onTraceResult={handleTraceResult}/>
+                        <Map
+                            onTraceResult={handleTraceResult}
+                            onDistrictClick={setActiveDistrict}
+                            zones={zoneData?.allZones || []}/>
                     </div>
-                </div>
             </main>
 
         </div>

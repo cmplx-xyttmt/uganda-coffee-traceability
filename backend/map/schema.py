@@ -41,7 +41,7 @@ class DistrictType(DjangoObjectType):
 
 class Query(graphene.ObjectType):
     # Query to get ALL zones
-    all_zones = graphene.List(CoffeeZoneType)
+    all_zones = graphene.List(CoffeeZoneType, district_name=graphene.String())
 
     # Traceability Query
     check_traceability = graphene.Field(
@@ -54,8 +54,10 @@ class Query(graphene.ObjectType):
 
     all_districts = graphene.List(DistrictType)
 
-    def resolve_all_zones(root, info):
-        return CoffeeZone.objects.all()
+    def resolve_all_zones(root, info, district_name=None):
+        if district_name:
+            return CoffeeZone.objects.filter(region_name=district_name)
+        return CoffeeZone.objects.none()
 
     def resolve_check_traceability(root, info, lat, lng):
         user_point = Point(lng, lat, srid=4326)

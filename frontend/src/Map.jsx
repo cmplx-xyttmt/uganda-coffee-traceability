@@ -68,7 +68,7 @@ function MapEventsHandler({onResult}) {
     )
 }
 
-function Map({onTraceResult}) {
+function Map({onTraceResult, onDistrictClick, zones}) {
     const {loading, error, data: districtData} = useQuery(GET_DISTRICT_BOUNDARIES);
     const center = [1.3733, 32.2903]; // Center of Uganda
 
@@ -85,6 +85,13 @@ function Map({onTraceResult}) {
 
             {districtData && (<GeoJSON
                 data={districtData.allDistricts.map(d => JSON.parse(d.mpoly))}
+                eventHandlers={{
+                    click: (e) => {
+                        const name = e.propagatedFrom.feature.properties.adm2_name;
+                        console.log("Selected District:", name);
+                        onDistrictClick(name);
+                    }
+                }}
                 style={{
                     color: '#94a3b8',
                     weight: 1,
@@ -92,6 +99,19 @@ function Map({onTraceResult}) {
                     fillColor: '#64748b'
                 }}
             />)}
+
+            {zones.length > 0 && (
+                <GeoJSON
+                    key={zones[0].id}
+                    data={zones.map(z => JSON.parse(z.mpoly))}
+                    style={{
+                        color: '#059669',
+                        weight: 1.5,
+                        fillColor: '#10b981',
+                        fillOpacity: 0.6
+                    }}
+                />
+            )}
             <MapEventsHandler onResult={onTraceResult}/>
         </MapContainer>
     );
