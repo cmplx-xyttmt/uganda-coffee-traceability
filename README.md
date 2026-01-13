@@ -3,6 +3,8 @@ A full-stack geospatial application designed to verify coffee plot compliance wi
 
 This tool leverages 10m-resolution satellite data from 2020 to provide a baseline for "Grandfathered" coffee production in Uganda.
 
+You can read my approach to [this project here](https://cmplx-xyttmt.github.io/posts/4_coffee_traceability/).
+
 ## The Stack
 - **Data**: Google Earth Engine (GEE), Python
 - **Backend**: Django (GeoDjango), PostGIS (PostgreSQL 18), Graphene (GraphQL).
