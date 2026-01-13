@@ -1,4 +1,4 @@
-import {MapContainer, TileLayer, useMapEvents, Marker, Popup, GeoJSON} from "react-leaflet";
+import {MapContainer, TileLayer, useMapEvents, Marker, Popup, GeoJSON, useMap} from "react-leaflet";
 import 'leaflet/dist/leaflet.css';
 import {gql} from "@apollo/client";
 import {useLazyQuery, useQuery} from "@apollo/client/react";
@@ -72,6 +72,11 @@ function Map({onTraceResult, onDistrictClick, zones}) {
     const {loading, error, data: districtData} = useQuery(GET_DISTRICT_BOUNDARIES);
     const center = [1.3733, 32.2903]; // Center of Uganda
 
+    const ZoomHandler = () => {
+        const map = useMap();
+        return null;
+    }
+
     return (
         <MapContainer
             center={center}
@@ -87,9 +92,21 @@ function Map({onTraceResult, onDistrictClick, zones}) {
                 data={districtData.allDistricts.map(d => JSON.parse(d.mpoly))}
                 eventHandlers={{
                     click: (e) => {
-                        const name = e.propagatedFrom.feature.properties.name;
-                        console.log("Selected District:", name);
+                        const layer = e.propagatedFrom;
+
+                        const name = layer.feature.properties.name;
                         onDistrictClick(name);
+
+                        // Zoom in on the district
+                        const bounds = layer.getBounds();
+                        if(bounds.isValid()) {
+                            e.target._map.flyToBounds(bounds, {
+                                padding: [50, 50],
+                                duration: 1.5,
+                                easeLinearity: 0.25,
+                                maxZoom: 12
+                            });
+                        }
                     }
                 }}
                 style={{
@@ -105,9 +122,9 @@ function Map({onTraceResult, onDistrictClick, zones}) {
                     key={zones[0].id}
                     data={zones.map(z => JSON.parse(z.mpoly))}
                     style={{
-                        color: '#059669',
+                        color: '#4B3621',
                         weight: 1.5,
-                        fillColor: '#10b981',
+                        fillColor: '#6F4E37',
                         fillOpacity: 0.6
                     }}
                 />
