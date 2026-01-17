@@ -34,6 +34,3 @@ To load the data:
 cd frontend && npm install && npm run dev
 ```
 
-## Article
-Check-out the [article](to-do) I wrote about this project.
-
